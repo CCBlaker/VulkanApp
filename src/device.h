@@ -19,10 +19,6 @@ class Device {
     private:
 
         VulkanContext& context;
-        bool enableValidationLayers;
-        std::vector<const char*> validationLayers;
-        PhysicalDevice* physicalDevice;
-        VkPhysicalDevice vulkanPhysicalDevice;
         
         void createLogicalDevice(PhysicalDevice& physicalDevice);
 };

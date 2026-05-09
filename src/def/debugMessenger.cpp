@@ -63,29 +63,25 @@ void DebugMessenger::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreat
 }
 
 void DebugMessenger::createDebugMessenger() {
-    if (!enableValidationLayers) return;
+    if (!ISDEBUG) return;
     
     VkDebugUtilsMessengerCreateInfoEXT createInfo{};
     populateDebugMessengerCreateInfo(createInfo);
 
     //Create Debug Messenger Instance 
-    if (CreateDebugUtilsMessengerEXT(vulkanInstance, &createInfo, nullptr, &vulkanDebugMessenger) != VK_SUCCESS) {
+    if (CreateDebugUtilsMessengerEXT(VINSTANCE, &createInfo, nullptr, &vulkanDebugMessenger) != VK_SUCCESS) {
         throw std::runtime_error("Failed to Initialize Debug Messenger");
     }
 }
 
 void DebugMessenger::destroyDebugMessenger() {
-    if (enableValidationLayers && vulkanDebugMessenger != VK_NULL_HANDLE) {
-        DestroyDebugUtilsMessengerEXT(vulkanInstance, vulkanDebugMessenger, nullptr);
+    if (ISDEBUG && vulkanDebugMessenger != VK_NULL_HANDLE) {
+        DestroyDebugUtilsMessengerEXT(VINSTANCE, vulkanDebugMessenger, nullptr);
     }
 }
 
-DebugMessenger::DebugMessenger(VulkanContext& ctx) : context(ctx), enableValidationLayers(ctx.enableValidationLayers), validationLayers(ctx.validationLayers)
+DebugMessenger::DebugMessenger(VulkanContext& ctx) : context(ctx)
 {
-    if (ctx.instance == nullptr) {
-        throw std::runtime_error("Instance must be created before DebugMessenger");
-    }
-    vulkanInstance = ctx.instance->vulkanInstance;
     ctx.debugMessenger = this;
     createDebugMessenger();
 }

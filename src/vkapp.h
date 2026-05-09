@@ -6,6 +6,8 @@
 #include "debugMessenger.h"
 #include "physicalDevice.h"
 #include "device.h"
+#include "swapChain.h"
+
 #include "context.h"
 
 class VulkanApp {
@@ -24,6 +26,7 @@ private:
     std::unique_ptr<Window> window;
     std::unique_ptr<PhysicalDevice> physicalDevice;
     std::unique_ptr<Device> device;
+    std::unique_ptr<SwapChain> swapChain;
 
     void init();
     void mainLoop();

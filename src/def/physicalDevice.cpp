@@ -3,7 +3,10 @@
 #include <vector>
 #include <stdexcept>
 #include <optional>
+#include <set>
 
+#include "context.h"
+#include "swapChain.h"
 #include "physicalDevice.h"
 #include "instance.h"
 #include "window.h"
@@ -23,11 +26,11 @@ QueueFamilyIndicies PhysicalDevice::findQueueFamilies(VkPhysicalDevice device) {
         //Check Graphics Support
         if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
             indices.graphicsFamily = i;
-        }
+        }   
         
         //Check Presentation Support
         VkBool32 presentSupport = false;
-        vkGetPhysicalDeviceSurfaceSupportKHR(device, i, vulkanSurface, &presentSupport);
+        vkGetPhysicalDeviceSurfaceSupportKHR(device, i, VSURFACE, &presentSupport);
         if (presentSupport) {
             indices.presentFamily = i;
         }
@@ -41,24 +44,45 @@ QueueFamilyIndicies PhysicalDevice::findQueueFamilies(VkPhysicalDevice device) {
     return indices;
 }
 
+bool PhysicalDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) {
+    uint32_t extensionCount;
+
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+    std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+    std::set<std::string> requiredExtensionsSet(EXTENSIONS.begin(), EXTENSIONS.end());
+
+    for (const VkExtensionProperties& extension : availableExtensions) {
+        requiredExtensionsSet.erase(extension.extensionName);
+    }
+
+    return requiredExtensionsSet.empty();
+}
+
 //Check if Physical Device is Suitable for Vulkan
 bool PhysicalDevice::isDeviceSuitable(VkPhysicalDevice device) {
     QueueFamilyIndicies indices = findQueueFamilies(device);
 
-    return indices.isComplete();
+    bool extensionsSupported = checkDeviceExtensionSupport(device);
+
+    bool swapChainAdequate = false;
+    swapChainAdequate = !SWAPCHAIN->supportDetails.formats.empty() && !SWAPCHAIN->supportDetails.presentModes.empty();
+
+    return indices.isComplete() && extensionsSupported && swapChainAdequate;
 }
 
 //Picks Physical Device for Vulkan
 void PhysicalDevice::pickPhysicalDevice() {
     uint32_t deviceCount = 0;
-    vkEnumeratePhysicalDevices(vulkanInstance, &deviceCount, nullptr);
+    vkEnumeratePhysicalDevices(VINSTANCE, &deviceCount, nullptr);
     
     if (deviceCount == 0) {
         throw std::runtime_error("Failed to find Vulkan Supported GPU");
     }
 
     std::vector<VkPhysicalDevice> devices(deviceCount);
-    vkEnumeratePhysicalDevices(vulkanInstance, &deviceCount, devices.data());
+    vkEnumeratePhysicalDevices(VINSTANCE, &deviceCount, devices.data());
 
     for (const auto& device : devices) {
         QueueFamilyIndicies indices = findQueueFamilies(device);
@@ -77,12 +101,6 @@ void PhysicalDevice::pickPhysicalDevice() {
 
 PhysicalDevice::PhysicalDevice(VulkanContext& ctx) : context(ctx)
 {
-    if (ctx.instance == nullptr) {
-        throw std::runtime_error("PhysicalDevice Created Before Instance");
-    }
-    vulkanInstance = ctx.instance->vulkanInstance;
-    vulkanSurface = ctx.window->vulkanSurface;
-
     ctx.physicalDevice = this;
     pickPhysicalDevice();
 }

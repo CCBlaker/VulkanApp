@@ -16,7 +16,7 @@ std::vector<const char*> Instance::getRequiredExtensions() {
 
     std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
     
-    if (enableValidationLayers) {
+    if (ISDEBUG) {
         extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
     return extensions;
@@ -30,7 +30,7 @@ bool Instance::checkValidationLayerSupport() {
     std::vector<VkLayerProperties> availableLayers(layerCount);
     vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
-    for (const char* layerName : validationLayers) {
+    for (const char* layerName : LAYERS) {
         bool layerFound = false;
         for (const auto& availableLayer : availableLayers) {
             if (strcmp(layerName, availableLayer.layerName) == 0) {
@@ -47,9 +47,9 @@ bool Instance::checkValidationLayerSupport() {
 
 void Instance::createInstance() {
 
-    std::cout << "Validation Layers: " << std::format("{}", enableValidationLayers) << std::endl;
+    std::cout << "Validation Layers: " << std::format("{}", ISDEBUG) << std::endl;
     
-    if (enableValidationLayers && !checkValidationLayerSupport()) {
+    if (ISDEBUG && !checkValidationLayerSupport()) {
         throw std::runtime_error("Validation Layers not Available");
     }
 
@@ -78,9 +78,9 @@ void Instance::createInstance() {
 
     //Pass Validation Layer info
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
-    if (enableValidationLayers) {
-        createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-        createInfo.ppEnabledLayerNames = validationLayers.data();
+    if (ISDEBUG) {
+        createInfo.enabledLayerCount = static_cast<uint32_t>(LAYERS.size());
+        createInfo.ppEnabledLayerNames = LAYERS.data();
     } else {
         createInfo.enabledLayerCount = 0;
     }
@@ -91,7 +91,7 @@ void Instance::createInstance() {
     }
 }
 
-Instance::Instance(VulkanContext& ctx) : context(ctx), enableValidationLayers(ctx.enableValidationLayers), validationLayers(ctx.validationLayers)
+Instance::Instance(VulkanContext& ctx) : context(ctx)
 {
     ctx.instance = this;
     createInstance();

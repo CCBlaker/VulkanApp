@@ -13,8 +13,12 @@ const std::vector<const char*> validationLayers = {
     "VK_LAYER_KHRONOS_validation"
 };
 
+const std::vector<const char*> deviceExtensions = {
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
+
 void VulkanApp::init() {
-    context = std::make_unique<VulkanContext>(enableValidationLayers, validationLayers);
+    context = std::make_unique<VulkanContext>(enableValidationLayers, validationLayers, deviceExtensions);
 
     glfwInit();
 
@@ -33,6 +37,9 @@ void VulkanApp::init() {
 
     device = std::make_unique<Device>(*context);
     context->device = device.get();
+
+    swapChain = std::make_unique<SwapChain>(*context);
+    context->swapChain = swapChain.get();
 
 }
 

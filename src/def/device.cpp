@@ -11,10 +11,9 @@ void Device::createLogicalDevice(PhysicalDevice& physicalDevice) {
     QueueFamilyIndicies indices = physicalDevice.vulkanPhysicalDeviceQueueFamilies;
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-    std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(), indices.presentFamily.value()};
     
     float queuePriority = 1.0f;
-    for (uint32_t queueFamily : uniqueQueueFamilies) {
+    for (uint32_t queueFamily : physicalDevice.vulkanPhysicalDeviceQueueFamilies.uniqueFamilies()) {
         VkDeviceQueueCreateInfo queueCreateInfo{};
         queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         queueCreateInfo.queueFamilyIndex = queueFamily;
@@ -32,11 +31,12 @@ void Device::createLogicalDevice(PhysicalDevice& physicalDevice) {
     createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
     createInfo.pQueueCreateInfos = queueCreateInfos.data();
     createInfo.pEnabledFeatures = &deviceFeatures;
-    createInfo.enabledExtensionCount = 0;
+    createInfo.enabledExtensionCount = static_cast<uint32_t>(context.deviceExtensions.size());
+    createInfo.ppEnabledExtensionNames = context.deviceExtensions.data();
 
-    if (enableValidationLayers) {
-        createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-        createInfo.ppEnabledLayerNames = validationLayers.data();
+    if (ISDEBUG) {
+        createInfo.enabledLayerCount = static_cast<uint32_t>(LAYERS.size());
+        createInfo.ppEnabledLayerNames = LAYERS.data();
     } else {
         createInfo.enabledLayerCount = 0;
     }
@@ -49,15 +49,10 @@ void Device::createLogicalDevice(PhysicalDevice& physicalDevice) {
     vkGetDeviceQueue(vulkanDevice, indices.presentFamily.value(), 0, &presentQueue);
 }
 
-Device::Device(VulkanContext& ctx) : context(ctx), enableValidationLayers(ctx.enableValidationLayers), validationLayers(ctx.validationLayers)
+Device::Device(VulkanContext& ctx) : context(ctx)
 {
-    if (ctx.physicalDevice == nullptr) {
-        throw std::runtime_error("Device Created before PhysicalDevice");
-    }
-    physicalDevice = ctx.physicalDevice;
-    vulkanPhysicalDevice = physicalDevice->vulkanPhysicalDevice;
     ctx.device = this;
-    createLogicalDevice(*physicalDevice);
+    createLogicalDevice(*PDEVICE);
 }
 
 Device::~Device() {

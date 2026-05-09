@@ -15,9 +15,6 @@ class DebugMessenger {
     private:
 
         VulkanContext& context;
-        VkInstance vulkanInstance;
-        bool enableValidationLayers;
-        std::vector<const char*> validationLayers;
 
         VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, 
                         const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, 

@@ -12,15 +12,11 @@ class Instance {
         
         ~Instance();
 
-
     private:
         
         VulkanContext& context;
-        bool enableValidationLayers;
-        std::vector<const char*> validationLayers;
-
+        
         std::vector<const char*> getRequiredExtensions();
-
         bool checkValidationLayerSupport();
 
         void createInstance();
