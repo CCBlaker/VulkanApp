@@ -2,6 +2,7 @@
 
 #include "vkapp.h"
 #include <memory>
+#include <cstring>
 
 #ifdef NDEBUG
     const bool enableValidationLayers = false;

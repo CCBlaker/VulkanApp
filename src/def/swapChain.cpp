@@ -116,11 +116,20 @@ void SwapChain::createSwapChain() {
     }
 
     vkGetSwapchainImagesKHR(VDEVICE, vulkanSwapChain, &imageCount, nullptr);
-    swapChainImages.resize(imageCount);
+    swapChainImageNum = imageCount;
+    swapChainImages.resize(swapChainImageNum);
     vkGetSwapchainImagesKHR(VDEVICE, vulkanSwapChain, &imageCount, swapChainImages.data());
 
     swapChainImageFormat = surfaceFormat.format;
     swapChainExtent = extent;
+}
+
+void SwapChain::createImageViews() {
+    swapChainImageViews.resize(swapChainImageNum);
+    for (size_t i = 0; i < swapChainImageNum; i++) {
+        VkImageViewCreateInfo createInfo{};
+        createInfo.sType = VK_STRUCTURE_TYPE_IMAGE
+    }
 }
 
 SwapChain::SwapChain(VulkanContext& ctx) : context(ctx) {

@@ -14,10 +14,13 @@ class SwapChain {
     
         VkSwapchainKHR vulkanSwapChain;
         std::vector<VkImage> swapChainImages;
+        std::vector<VkImageView> swapChainImageViews;
+        size_t swapChainImageNum;
+
+        SwapChainSupportDetails supportDetails;
         VkFormat swapChainImageFormat;
         VkExtent2D swapChainExtent;
 
-        SwapChainSupportDetails supportDetails;
         SwapChain(VulkanContext& context);
         
         ~SwapChain();
@@ -33,6 +36,7 @@ class SwapChain {
         VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
         void createSwapChain();
+        void createImageViews();
 
 
 };
