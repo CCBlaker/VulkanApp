@@ -18,8 +18,8 @@ void Pipeline::createGraphicsPipeline() {
 
 Pipeline::Pipeline(VulkanContext& ctx) :
   context(ctx),
-  vertShader(ctx, "../shaders/vert.spv"),
-  fragShader(ctx, "../shaders/frag.spv")
+  vertShader(ctx, "shaders/vert.spv"),
+  fragShader(ctx, "shaders/frag.spv")
 {
     ctx.pipeline = this;
 
