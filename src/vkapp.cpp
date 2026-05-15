@@ -42,6 +42,9 @@ void VulkanApp::init() {
     swapChain = std::make_unique<SwapChain>(*context);
     context->swapChain = swapChain.get();
 
+    renderpass = std::make_unique<Renderpass>(*context);
+    context->renderpass = renderpass.get();
+
     pipeline = std::make_unique<Pipeline>(*context);
     context->pipeline = pipeline.get();
 

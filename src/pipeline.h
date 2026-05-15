@@ -10,7 +10,8 @@ class Pipeline {
         
         ~Pipeline();
 
-        VkPipeline vulkanPipeline; 
+        VkPipeline vulkanGraphicsPipeline; 
+        VkPipelineLayout vulkanPipelineLayout;
 
     private:
 
@@ -18,6 +19,8 @@ class Pipeline {
         Shader fragShader;
 
         void createGraphicsPipeline();
+        void createPipelineLayout();
+
 
         VulkanContext& context;
 

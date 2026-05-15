@@ -7,6 +7,7 @@
 #include "physicalDevice.h"
 #include "device.h"
 #include "swapChain.h"
+#include "renderpass.h"
 #include "pipeline.h"
 
 #include "context.h"
@@ -28,6 +29,7 @@ private:
     std::unique_ptr<PhysicalDevice> physicalDevice;
     std::unique_ptr<Device> device;
     std::unique_ptr<SwapChain> swapChain;
+    std::unique_ptr<Renderpass> renderpass;
     std::unique_ptr<Pipeline> pipeline;
 
     void init();
