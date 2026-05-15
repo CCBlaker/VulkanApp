@@ -4,14 +4,18 @@
 #define SWAPCHAIN context.swapChain
 #define PDEVICE context.physicalDevice
 #define PINDICES context.physicalDevice->vulkanPhysicalDeviceQueueFamilies
+#define PIPELINE context.pipeline
 
 #define VINSTANCE context.instance->vulkanInstance
 #define VDEBUG context.debugMessenger->vulkanDebugMessenger
 #define GLWINDOW context.window->glWindow
 #define VSURFACE context.window->vulkanSurface
 #define VDEVICE context.device->vulkanDevice
-#define VPIPELINE context.pipeline->vulkanPipeline
+#define VPIPELINE context.pipeline->vulkanGraphicsPipeline
 #define VRENDERPASS context.renderpass->vulkanRenderpass
+#define VFRAMEBUFFERS context.framebuffer->vulkanFramebuffers
+#define VCOMMANDPOOL context.commandbuffer->vulkanCommandPool
+#define VCOMMANDBUFFER context.commandbuffer->vulkanCommandbuffer
 
 #define ISDEBUG context.enableValidationLayers
 #define LAYERS context.validationLayers
@@ -30,6 +34,9 @@ class Device;
 class SwapChain;
 class Renderpass;
 class Pipeline;
+class Framebuffer;
+class Commandbuffer;
+// class SyncObjects;
 
 struct VulkanContext {
     bool enableValidationLayers;
@@ -44,6 +51,10 @@ struct VulkanContext {
     SwapChain* swapChain = nullptr;
     Renderpass* renderpass = nullptr;
     Pipeline* pipeline = nullptr;
+    Framebuffer* framebuffer = nullptr;
+    Commandbuffer* commandbuffer = nullptr;
+    // SyncObjects* syncObjects = nullptr;
+
 
     VulkanContext(bool enable, const std::vector<const char*>& layers, const std::vector<const char*>& extensions)
         : enableValidationLayers(enable), validationLayers(layers), deviceExtensions(extensions){}

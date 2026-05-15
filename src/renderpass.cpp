@@ -1,6 +1,4 @@
 
-#pragma once
-
 #include <stdexcept>
 
 #include "renderpass.h"

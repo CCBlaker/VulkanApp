@@ -1,4 +1,3 @@
-#pragma once
 
 #include <cstdint>
 #include <limits>
@@ -156,6 +155,7 @@ SwapChain::SwapChain(VulkanContext& ctx) : context(ctx) {
 
     ctx.swapChain = this;
     createSwapChain();
+    createImageViews();
 }
 
 SwapChain::~SwapChain() {

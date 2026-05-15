@@ -13,6 +13,10 @@ class Pipeline {
         VkPipeline vulkanGraphicsPipeline; 
         VkPipelineLayout vulkanPipelineLayout;
 
+        VkViewport viewport{};
+        VkRect2D scissor{};
+
+
     private:
 
         Shader vertShader;

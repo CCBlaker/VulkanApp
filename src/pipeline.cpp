@@ -59,7 +59,6 @@ void Pipeline::createGraphicsPipeline() {
     //Viewport Display State
 
     //Viewport Rect
-    VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
     viewport.width = SWAPCHAIN->swapChainExtent.width;
@@ -68,7 +67,6 @@ void Pipeline::createGraphicsPipeline() {
     viewport. maxDepth = 1.0f;
 
     //Scissor Rect
-    VkRect2D scissor{};
     scissor.offset = {0, 0};
     scissor.extent = SWAPCHAIN->swapChainExtent;
 

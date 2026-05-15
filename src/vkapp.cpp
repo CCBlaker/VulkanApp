@@ -1,4 +1,3 @@
-#pragma once
 
 #include "vkapp.h"
 #include <memory>
@@ -48,6 +47,14 @@ void VulkanApp::init() {
     pipeline = std::make_unique<Pipeline>(*context);
     context->pipeline = pipeline.get();
 
+    framebuffer = std::make_unique<Framebuffer>(*context);
+    context->framebuffer = framebuffer.get();
+
+    commandbuffer = std::make_unique<Commandbuffer>(*context);
+    context->commandbuffer = commandbuffer.get();
+
+    // syncObjects = std::make_unique<SyncObjects>(*context);
+    // context->syncObjects = syncObjects.get();
 }
 
 void VulkanApp::mainLoop() {
