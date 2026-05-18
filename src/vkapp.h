@@ -11,7 +11,7 @@
 #include "pipeline.h"
 #include "framebuffer.h"
 #include "commandbuffer.h"
-#include "syncObjects.h"
+#include "frameDraw.h"
 
 #include "context.h"
 
@@ -36,8 +36,7 @@ private:
     std::unique_ptr<Pipeline> pipeline;
     std::unique_ptr<Framebuffer> framebuffer;
     std::unique_ptr<Commandbuffer> commandbuffer;
-    // std::unique_ptr<SyncObjects> syncObjects;
-
+    std::unique_ptr<FrameDraw> frameDraw;
 
     void init();
     void mainLoop();

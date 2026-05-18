@@ -7,6 +7,8 @@ class Commandbuffer {
     public:
 
         Commandbuffer(VulkanContext& context);
+
+        void recordCommandbuffer(VkCommandBuffer commandbuffer, uint32_t imageIndex);
         
         ~Commandbuffer();
 
@@ -17,7 +19,6 @@ class Commandbuffer {
 
         void createCommandPool();
         void allocateCommandbuffer();
-        void recordCommandbuffer(VkCommandBuffer commandbuffer, uint32_t imageIndex);
 
         VulkanContext& context;
 

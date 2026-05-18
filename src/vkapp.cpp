@@ -53,14 +53,16 @@ void VulkanApp::init() {
     commandbuffer = std::make_unique<Commandbuffer>(*context);
     context->commandbuffer = commandbuffer.get();
 
-    // syncObjects = std::make_unique<SyncObjects>(*context);
-    // context->syncObjects = syncObjects.get();
+    frameDraw = std::make_unique<FrameDraw>(*context);
+    context->frameDraw = frameDraw.get();
 }
 
 void VulkanApp::mainLoop() {
     while (!glfwWindowShouldClose(window->glWindow)) {
         glfwPollEvents();
+        frameDraw.get()->drawFrame();
     }
+        vkDeviceWaitIdle(device.get()->vulkanDevice);
 }
 
 void VulkanApp::cleanup() {
