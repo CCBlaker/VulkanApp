@@ -5,13 +5,17 @@
 class FrameDraw {
     public:
     
-        VkSemaphore imageAvailableSemaphore;
-        VkSemaphore imageFinishedSemaphore;
+        std::vector<VkSemaphore> imageAvailableSemaphores;
+        std::vector<VkSemaphore> imageFinishedSemaphores;
 
-        VkFence frameFlightFence;
-
-        FrameDraw(VulkanContext& context);
+        std::vector<VkFence> frameFlightFences;
         
+        FrameDraw(VulkanContext& context);
+
+        uint32_t currentFrame;
+        bool swapChainAdequate;
+        bool framebufferResized = false;
+
         void drawFrame();
         
         ~FrameDraw();
@@ -21,6 +25,4 @@ class FrameDraw {
         VulkanContext& context;
 
         void createSyncObjects();
-
-
 };

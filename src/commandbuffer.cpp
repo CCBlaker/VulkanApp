@@ -20,14 +20,16 @@ void Commandbuffer::createCommandPool() {
     }
 }
 
-void Commandbuffer::allocateCommandbuffer() {
+void Commandbuffer::allocateCommandbuffers() {
+    vulkanCommandbuffers.resize(context.maxFramesInFlight);
+
     VkCommandBufferAllocateInfo allocationInfo{};
     allocationInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocationInfo.commandPool = vulkanCommandPool;
     allocationInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocationInfo.commandBufferCount = 1;
+    allocationInfo.commandBufferCount = (uint32_t) vulkanCommandbuffers.size();
 
-    if (vkAllocateCommandBuffers(VDEVICE, &allocationInfo, &vulkanCommandbuffer) != VK_SUCCESS) {
+    if (vkAllocateCommandBuffers(VDEVICE, &allocationInfo, vulkanCommandbuffers.data()) != VK_SUCCESS) {
         throw std::runtime_error("Failed to Allocate Command Buffers");
     }
 }
@@ -49,13 +51,13 @@ void Commandbuffer::recordCommandbuffer(VkCommandBuffer commandbuffer, uint32_t 
     renderpassInfo.renderArea.offset = {0, 0};
     renderpassInfo.renderArea.extent = SWAPCHAIN->swapChainExtent;
 
-    vkCmdBeginRenderPass(commandbuffer, &renderpassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-    vkCmdBindPipeline(commandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VPIPELINE);
-
     VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
     renderpassInfo.clearValueCount = 1;
     renderpassInfo.pClearValues = &clearColor;
+
+    vkCmdBeginRenderPass(commandbuffer, &renderpassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+    vkCmdBindPipeline(commandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VPIPELINE);
 
     vkCmdSetViewport(commandbuffer, 0, 1, &PIPELINE->viewport);
     vkCmdSetScissor(commandbuffer, 0, 1, &PIPELINE->scissor);
@@ -73,7 +75,7 @@ Commandbuffer::Commandbuffer(VulkanContext& ctx) : context(ctx)
 {
     ctx.commandbuffer = this;
     createCommandPool();
-    allocateCommandbuffer();
+    allocateCommandbuffers();
 }
 
 Commandbuffer::~Commandbuffer() {

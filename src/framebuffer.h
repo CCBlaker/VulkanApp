@@ -8,13 +8,13 @@ class Framebuffer {
 
         Framebuffer(VulkanContext& context);
         
+        void createFramebuffer();
+        
         ~Framebuffer();
 
         std::vector<VkFramebuffer> vulkanFramebuffers; 
         
     private:
-
-        void createFramebuffer();
 
         VulkanContext& context;
 

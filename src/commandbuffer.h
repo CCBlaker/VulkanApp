@@ -13,12 +13,12 @@ class Commandbuffer {
         ~Commandbuffer();
 
         VkCommandPool vulkanCommandPool;
-        VkCommandBuffer vulkanCommandbuffer;
+        std::vector<VkCommandBuffer> vulkanCommandbuffers;
 
     private:
 
         void createCommandPool();
-        void allocateCommandbuffer();
+        void allocateCommandbuffers();
 
         VulkanContext& context;
 

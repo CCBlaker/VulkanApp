@@ -30,13 +30,11 @@ class SwapChain {
 
         VulkanContext& context;
 
+        void createSwapChain();
+        void createImageViews();
+
         void querySwapChainSupport(VkPhysicalDevice device);
         VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
         VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
         VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
-
-        void createSwapChain();
-        void createImageViews();
-
-
 };

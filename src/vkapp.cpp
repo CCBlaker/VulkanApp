@@ -17,8 +17,10 @@ const std::vector<const char*> deviceExtensions = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
 
+const int maxFramesInFlight = 2;
+
 void VulkanApp::init() {
-    context = std::make_unique<VulkanContext>(enableValidationLayers, validationLayers, deviceExtensions);
+    context = std::make_unique<VulkanContext>(enableValidationLayers, validationLayers, deviceExtensions, maxFramesInFlight);
 
     glfwInit();
 
@@ -60,7 +62,18 @@ void VulkanApp::init() {
 void VulkanApp::mainLoop() {
     while (!glfwWindowShouldClose(window->glWindow)) {
         glfwPollEvents();
+
         frameDraw.get()->drawFrame();
+
+        if (!frameDraw.get()->swapChainAdequate) {
+            window.get()->pauseWindowConditional();
+
+            vkDeviceWaitIdle(device.get()->vulkanDevice);
+
+            swapChain.reset(new SwapChain(*context));
+            framebuffer.reset(new Framebuffer(*context));
+        }
+        
     }
         vkDeviceWaitIdle(device.get()->vulkanDevice);
 }

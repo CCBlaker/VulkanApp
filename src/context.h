@@ -6,6 +6,7 @@
 #define PINDICES context.physicalDevice->vulkanPhysicalDeviceQueueFamilies
 #define DEVICE context.device
 #define PIPELINE context.pipeline
+#define FRAMEBUFFER context.framebuffer
 #define COMMANDBUFFER context.commandbuffer
 
 #define VINSTANCE context.instance->vulkanInstance
@@ -18,11 +19,12 @@
 #define VSWAPCHAIN context.swapChain->vulkanSwapChain
 #define VFRAMEBUFFERS context.framebuffer->vulkanFramebuffers
 #define VCOMMANDPOOL context.commandbuffer->vulkanCommandPool
-#define VCOMMANDBUFFER context.commandbuffer->vulkanCommandbuffer
+#define VCOMMANDBUFFERS context.commandbuffer->vulkanCommandbuffers
 
 #define ISDEBUG context.enableValidationLayers
 #define LAYERS context.validationLayers
 #define EXTENSIONS context.deviceExtensions
+#define MAXFRAMESINFLIGHT context.maxFramesInFlight;
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -45,6 +47,7 @@ struct VulkanContext {
     bool enableValidationLayers;
     std::vector<const char*> validationLayers;
     std::vector<const char*> deviceExtensions;
+    const int maxFramesInFlight;
 
     Instance* instance = nullptr;
     DebugMessenger* debugMessenger = nullptr;
@@ -59,6 +62,6 @@ struct VulkanContext {
     FrameDraw* frameDraw = nullptr;
 
 
-    VulkanContext(bool enable, const std::vector<const char*>& layers, const std::vector<const char*>& extensions)
-        : enableValidationLayers(enable), validationLayers(layers), deviceExtensions(extensions){}
+    VulkanContext(bool enable, const std::vector<const char*>& layers, const std::vector<const char*>& extensions, const int& flightFrames)
+        : enableValidationLayers(enable), validationLayers(layers), deviceExtensions(extensions), maxFramesInFlight(flightFrames) {}
 };
