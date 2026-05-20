@@ -59,16 +59,47 @@ bool PhysicalDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) {
     return requiredExtensionsSet.empty();
 }
 
+void PhysicalDevice::querySwapSurfaceSupport(VkPhysicalDevice device) {
+
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, VSURFACE, &supportDetails.capabilities);
+
+    uint32_t formatCount;
+    vkGetPhysicalDeviceSurfaceFormatsKHR(device, VSURFACE, &formatCount, nullptr);
+
+    if (formatCount != 0) {
+        supportDetails.formats.resize(formatCount);
+        vkGetPhysicalDeviceSurfaceFormatsKHR(device, VSURFACE, &formatCount, supportDetails.formats.data());
+    }
+
+    uint32_t presentModeCount;
+    vkGetPhysicalDeviceSurfacePresentModesKHR(device, VSURFACE, &presentModeCount, nullptr);
+    if (presentModeCount != 0) {
+        supportDetails.presentModes.resize(presentModeCount);
+        vkGetPhysicalDeviceSurfacePresentModesKHR(device, VSURFACE, &presentModeCount, supportDetails.presentModes.data());
+    }
+}
+
+
 //Check if Physical Device is Suitable for Vulkan
 bool PhysicalDevice::isDeviceSuitable(VkPhysicalDevice device) {
     QueueFamilyIndicies indices = findQueueFamilies(device);
-
+    
     bool extensionsSupported = checkDeviceExtensionSupport(device);
-
     bool swapChainAdequate = false;
-    swapChainAdequate = !SWAPCHAIN->supportDetails.formats.empty() && !SWAPCHAIN->supportDetails.presentModes.empty();
 
-    return indices.isComplete() && extensionsSupported && swapChainAdequate;
+    if (extensionsSupported) {
+        querySwapSurfaceSupport(device);
+        swapChainAdequate = !supportDetails.formats.empty() && !supportDetails.presentModes.empty();
+    }
+
+    if (indices.isComplete() && extensionsSupported && swapChainAdequate) {
+
+        vulkanPhysicalDevice = device;
+        vulkanQueueFamilies = indices;
+        
+        return true;
+    }
+    return false;
 }
 
 //Picks Physical Device for Vulkan
@@ -84,13 +115,7 @@ void PhysicalDevice::pickPhysicalDevice() {
     vkEnumeratePhysicalDevices(VINSTANCE, &deviceCount, devices.data());
 
     for (const auto& device : devices) {
-        QueueFamilyIndicies indices = findQueueFamilies(device);
-
-        if (indices.isComplete()) {
-            vulkanPhysicalDevice = device;
-            vulkanPhysicalDeviceQueueFamilies = indices;
-            break;
-        }
+        isDeviceSuitable(device);
     }
     if (vulkanPhysicalDevice == VK_NULL_HANDLE) {
         throw std::runtime_error("Failed to find Suitable GPU");

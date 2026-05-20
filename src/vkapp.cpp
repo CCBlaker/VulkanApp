@@ -40,23 +40,21 @@ void VulkanApp::init() {
     device = std::make_unique<Device>(*context);
     context->device = device.get();
 
-    swapChain = std::make_unique<SwapChain>(*context);
-    context->swapChain = swapChain.get();
-
     renderpass = std::make_unique<Renderpass>(*context);
     context->renderpass = renderpass.get();
 
+    swapChain = std::make_unique<SwapChain>(*context);
+    context->swapChain = swapChain.get();
+
     pipeline = std::make_unique<Pipeline>(*context);
     context->pipeline = pipeline.get();
-
-    framebuffer = std::make_unique<Framebuffer>(*context);
-    context->framebuffer = framebuffer.get();
 
     commandbuffer = std::make_unique<Commandbuffer>(*context);
     context->commandbuffer = commandbuffer.get();
 
     frameDraw = std::make_unique<FrameDraw>(*context);
     context->frameDraw = frameDraw.get();
+
 }
 
 void VulkanApp::mainLoop() {
@@ -69,16 +67,17 @@ void VulkanApp::mainLoop() {
             window.get()->pauseWindowConditional();
 
             vkDeviceWaitIdle(device.get()->vulkanDevice);
-
-            swapChain.reset(new SwapChain(*context));
-            framebuffer.reset(new Framebuffer(*context));
-        }
         
-    }
+            swapChain.get()->recreateSwapChain();
+
+            frameDraw.get()->swapChainAdequate = true;
+        }
         vkDeviceWaitIdle(device.get()->vulkanDevice);
+    }
 }
 
 void VulkanApp::cleanup() {
+    
     // unique_ptrs will clean up in reverse order
     glfwTerminate();
 }

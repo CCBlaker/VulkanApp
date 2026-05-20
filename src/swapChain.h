@@ -1,40 +1,44 @@
 #pragma once
 
 #include "context.h"
+#include "physicalDevice.h" 
 #include <vector>
-
-struct SwapChainSupportDetails {
-    VkSurfaceCapabilitiesKHR capabilities;
-    std::vector<VkSurfaceFormatKHR> formats;
-    std::vector<VkPresentModeKHR> presentModes;
-};
 
 class SwapChain {
     public:
     
         VkSwapchainKHR vulkanSwapChain;
+        
         std::vector<VkImage> swapChainImages;
         std::vector<VkImageView> swapChainImageViews;
+        std::vector<VkFramebuffer> vulkanFramebuffers; 
+
+        VkPresentModeKHR presentMode;
+        VkExtent2D extent;
+        uint32_t imageCount;
+        
         size_t swapChainImageNum;
 
-        SwapChainSupportDetails supportDetails;
         VkFormat swapChainImageFormat;
         VkExtent2D swapChainExtent;
 
         SwapChain(VulkanContext& context);
-        
-        ~SwapChain();
 
+        void recreateSwapChain();
+
+        ~SwapChain();
 
     private:
 
-        VulkanContext& context;
+        void cleanupSwapChain();
 
         void createSwapChain();
         void createImageViews();
+        void createFramebuffer();
 
-        void querySwapChainSupport(VkPhysicalDevice device);
-        VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
-        VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
-        VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+        void pickSupportDetails(const VkPhysicalDevice device, const SwapSurfaceSupportDetails& supportDetails);
+        VkPresentModeKHR pickPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+        VkExtent2D pickExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+
+        VulkanContext& context;
 };

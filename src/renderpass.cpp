@@ -2,12 +2,23 @@
 #include <stdexcept>
 
 #include "renderpass.h"
-#include "swapChain.h"
+#include "physicalDevice.h"
 #include "device.h"
+
+void Renderpass::pickSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
+    for (const auto& availableFormat : availableFormats) {
+        if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+            surfaceFormat = availableFormat;
+            return;
+        }
+    }
+    surfaceFormat = availableFormats[0];
+}
+
 
 void Renderpass::createRenderpass() {
     VkAttachmentDescription colorAttachment{};
-    colorAttachment.format = SWAPCHAIN->swapChainImageFormat;
+    colorAttachment.format = surfaceFormat.format;
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
     colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -51,6 +62,7 @@ void Renderpass::createRenderpass() {
 Renderpass::Renderpass(VulkanContext& ctx) : context(ctx)
 {
     ctx.renderpass = this;
+    pickSurfaceFormat(PDEVICE->supportDetails.formats);
     createRenderpass();
 }
 

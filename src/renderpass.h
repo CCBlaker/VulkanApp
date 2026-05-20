@@ -9,11 +9,14 @@ class Renderpass {
         
         ~Renderpass();
 
+        
         VkRenderPass vulkanRenderpass;
+        VkSurfaceFormatKHR surfaceFormat;
 
     private:
 
         void createRenderpass();
+        void pickSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 
         VulkanContext& context;
 

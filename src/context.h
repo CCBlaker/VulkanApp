@@ -3,11 +3,13 @@
 #define WINDOW context.window
 #define SWAPCHAIN context.swapChain
 #define PDEVICE context.physicalDevice
-#define PINDICES context.physicalDevice->vulkanPhysicalDeviceQueueFamilies
+#define PINDICES context.physicalDevice->vulkanQueueFamilies
 #define DEVICE context.device
+#define RENDERPASS context.renderpass
 #define PIPELINE context.pipeline
 #define FRAMEBUFFER context.framebuffer
 #define COMMANDBUFFER context.commandbuffer
+#define FRAMEDRAW context.frameDraw
 
 #define VINSTANCE context.instance->vulkanInstance
 #define VDEBUG context.debugMessenger->vulkanDebugMessenger
@@ -17,14 +19,14 @@
 #define VPIPELINE context.pipeline->vulkanGraphicsPipeline
 #define VRENDERPASS context.renderpass->vulkanRenderpass
 #define VSWAPCHAIN context.swapChain->vulkanSwapChain
-#define VFRAMEBUFFERS context.framebuffer->vulkanFramebuffers
+#define VFRAMEBUFFERS context.swapChain->vulkanFramebuffers
 #define VCOMMANDPOOL context.commandbuffer->vulkanCommandPool
 #define VCOMMANDBUFFERS context.commandbuffer->vulkanCommandbuffers
 
 #define ISDEBUG context.enableValidationLayers
 #define LAYERS context.validationLayers
 #define EXTENSIONS context.deviceExtensions
-#define MAXFRAMESINFLIGHT context.maxFramesInFlight;
+#define MAXFRAMESINFLIGHT context.maxFramesInFlight 
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -36,10 +38,9 @@ class DebugMessenger;
 class Window;
 class PhysicalDevice;
 class Device;
-class SwapChain;
 class Renderpass;
+class SwapChain;
 class Pipeline;
-class Framebuffer;
 class Commandbuffer;
 class FrameDraw;
 
@@ -54,10 +55,9 @@ struct VulkanContext {
     Window* window = nullptr;
     PhysicalDevice* physicalDevice = nullptr;
     Device* device = nullptr;
-    SwapChain* swapChain = nullptr;
     Renderpass* renderpass = nullptr;
+    SwapChain* swapChain = nullptr;
     Pipeline* pipeline = nullptr;
-    Framebuffer* framebuffer = nullptr;
     Commandbuffer* commandbuffer = nullptr;
     FrameDraw* frameDraw = nullptr;
 

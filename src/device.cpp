@@ -7,12 +7,12 @@
 
 //Creates the Logical Device that interfaces with the GPU
 void Device::createLogicalDevice(PhysicalDevice& physicalDevice) {
-    QueueFamilyIndicies indices = physicalDevice.vulkanPhysicalDeviceQueueFamilies;
+    QueueFamilyIndicies indices = physicalDevice.vulkanQueueFamilies;
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     
     float queuePriority = 1.0f;
-    for (uint32_t queueFamily : physicalDevice.vulkanPhysicalDeviceQueueFamilies.uniqueFamilies()) {
+    for (uint32_t queueFamily : physicalDevice.vulkanQueueFamilies.uniqueFamilies()) {
         VkDeviceQueueCreateInfo queueCreateInfo{};
         queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         queueCreateInfo.queueFamilyIndex = queueFamily;

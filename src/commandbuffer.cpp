@@ -6,7 +6,6 @@
 #include "physicalDevice.h"
 #include "renderpass.h"
 #include "swapChain.h"
-#include "framebuffer.h"
 #include "pipeline.h"
 
 void Commandbuffer::createCommandPool() {
@@ -49,7 +48,7 @@ void Commandbuffer::recordCommandbuffer(VkCommandBuffer commandbuffer, uint32_t 
     renderpassInfo.renderPass = VRENDERPASS;
     renderpassInfo.framebuffer = VFRAMEBUFFERS[imageIndex];
     renderpassInfo.renderArea.offset = {0, 0};
-    renderpassInfo.renderArea.extent = SWAPCHAIN->swapChainExtent;
+    renderpassInfo.renderArea.extent = SWAPCHAIN->extent;
 
     VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
     renderpassInfo.clearValueCount = 1;

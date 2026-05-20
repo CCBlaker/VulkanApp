@@ -7,40 +7,10 @@
 
 #include "swapChain.h"
 #include "window.h"
-#include "physicalDevice.h"
+#include "renderpass.h"
 #include "device.h"
 
-void SwapChain::querySwapChainSupport(VkPhysicalDevice device) {
-
-    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, VSURFACE, &supportDetails.capabilities);
-
-    uint32_t formatCount;
-    vkGetPhysicalDeviceSurfaceFormatsKHR(device, VSURFACE, &formatCount, nullptr);
-
-    if (formatCount != 0) {
-        supportDetails.formats.resize(formatCount);
-        vkGetPhysicalDeviceSurfaceFormatsKHR(device, VSURFACE, &formatCount, supportDetails.formats.data());
-    }
-
-    uint32_t presentModeCount;
-    vkGetPhysicalDeviceSurfacePresentModesKHR(device, VSURFACE, &presentModeCount, nullptr);
-    if (presentModeCount != 0) {
-        supportDetails.presentModes.resize(presentModeCount);
-        vkGetPhysicalDeviceSurfacePresentModesKHR(device, VSURFACE, &presentModeCount, supportDetails.presentModes.data());
-    }
-}
-
-VkSurfaceFormatKHR SwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
-    for (const auto& availableFormat : availableFormats) {
-        if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
-            return availableFormat;
-        }
-    }
-    return availableFormats[0];
-}
-
-
-VkPresentModeKHR SwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
+VkPresentModeKHR SwapChain::pickPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
     for (const auto& availablePresentMode : availablePresentModes) {
         if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
             return availablePresentMode;
@@ -49,8 +19,7 @@ VkPresentModeKHR SwapChain::chooseSwapPresentMode(const std::vector<VkPresentMod
     return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-
-VkExtent2D SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
+VkExtent2D SwapChain::pickExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
     if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
         return capabilities.currentExtent;
     } else {
@@ -69,26 +38,26 @@ VkExtent2D SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilit
     }
 }
 
-void SwapChain::createSwapChain() {
-
-    querySwapChainSupport(PDEVICE->vulkanPhysicalDevice);
-
-    VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(supportDetails.formats);
-    VkPresentModeKHR presentMode = chooseSwapPresentMode(supportDetails.presentModes);
-    VkExtent2D extent = chooseSwapExtent(supportDetails.capabilities);
+void SwapChain::pickSupportDetails(const VkPhysicalDevice device, const SwapSurfaceSupportDetails& supportDetails) {
     
-    uint32_t imageCount = supportDetails.capabilities.minImageCount + 1;
+    presentMode = pickPresentMode(supportDetails.presentModes);
+    extent = pickExtent(supportDetails.capabilities);
+    
+    imageCount = supportDetails.capabilities.minImageCount + 1;
 
     if (supportDetails.capabilities.maxImageCount > 0 && imageCount > supportDetails.capabilities.maxImageCount) {
         imageCount = supportDetails.capabilities.maxImageCount;
     }
+}
+
+void SwapChain::createSwapChain() {
 
     VkSwapchainCreateInfoKHR createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
     createInfo.surface = VSURFACE;
     createInfo.minImageCount = imageCount;
-    createInfo.imageFormat = surfaceFormat.format;
-    createInfo.imageColorSpace = surfaceFormat.colorSpace;
+    createInfo.imageFormat = RENDERPASS->surfaceFormat.format;
+    createInfo.imageColorSpace = RENDERPASS->surfaceFormat.colorSpace;
     createInfo.imageExtent = extent;
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
@@ -104,7 +73,7 @@ void SwapChain::createSwapChain() {
         createInfo.queueFamilyIndexCount = 0;
         createInfo.pQueueFamilyIndices = nullptr;
     }
-    createInfo.preTransform = supportDetails.capabilities.currentTransform;
+    createInfo.preTransform = PDEVICE->supportDetails.capabilities.currentTransform;
     createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 
     createInfo.presentMode = presentMode;
@@ -119,7 +88,7 @@ void SwapChain::createSwapChain() {
     swapChainImages.resize(swapChainImageNum);
     vkGetSwapchainImagesKHR(VDEVICE, vulkanSwapChain, &imageCount, swapChainImages.data());
 
-    swapChainImageFormat = surfaceFormat.format;
+    swapChainImageFormat = RENDERPASS->surfaceFormat.format;
     swapChainExtent = extent;
 }
 
@@ -151,19 +120,62 @@ void SwapChain::createImageViews() {
     }
 }
 
-SwapChain::SwapChain(VulkanContext& ctx) : context(ctx) {
+void SwapChain::createFramebuffer() {
+    vulkanFramebuffers.resize(swapChainImageViews.size());
 
-    ctx.swapChain = this;
-    createSwapChain();
-    createImageViews();
+    for (size_t i = 0; i < swapChainImageNum; i++) {
+
+        VkImageView attachments[] = {
+            swapChainImageViews[i]
+        };
+
+        VkFramebufferCreateInfo framebufferInfo{};
+        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        framebufferInfo.renderPass = VRENDERPASS;
+        framebufferInfo.attachmentCount = 1;
+        framebufferInfo.pAttachments = attachments;
+        framebufferInfo.width = swapChainExtent.width;
+        framebufferInfo.height = swapChainExtent.height;
+        framebufferInfo.layers = 1;
+
+        if (vkCreateFramebuffer(VDEVICE, &framebufferInfo, nullptr, &vulkanFramebuffers[i]) != VK_SUCCESS) {
+            throw std::runtime_error("Failed to Create Framebuffer");
+        }
+    }
 }
 
-SwapChain::~SwapChain() {
-
+void SwapChain::cleanupSwapChain() {
     vkDestroySwapchainKHR(VDEVICE, vulkanSwapChain, nullptr);
     for (auto imageView : swapChainImageViews) {
         vkDestroyImageView(VDEVICE, imageView, nullptr);
     }
+    for (auto framebuffer : vulkanFramebuffers) {
+        vkDestroyFramebuffer(VDEVICE, framebuffer, nullptr);
+    }
+}
+
+void SwapChain::recreateSwapChain() {    
+    vkDeviceWaitIdle(VDEVICE);
+
+    pickSupportDetails(PDEVICE->vulkanPhysicalDevice, PDEVICE->supportDetails);
+    cleanupSwapChain();
+
+    createSwapChain();
+    createImageViews();
+    createFramebuffer();
+}
 
 
+SwapChain::SwapChain(VulkanContext& ctx) : context(ctx) {
+
+    ctx.swapChain = this;
+    pickSupportDetails(PDEVICE->vulkanPhysicalDevice, PDEVICE->supportDetails);
+    createSwapChain();
+    createImageViews();
+    createFramebuffer();
+}
+
+SwapChain::~SwapChain() {
+
+    cleanupSwapChain();
 }

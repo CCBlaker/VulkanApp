@@ -5,8 +5,8 @@
 #include "frameDraw.h"
 #include "device.h"
 #include "swapChain.h"
-#include "framebuffer.h"
 #include "commandbuffer.h"
+#include "window.h"
 
 void FrameDraw::createSyncObjects() {
     imageAvailableSemaphores.resize(context.maxFramesInFlight);
@@ -103,6 +103,7 @@ FrameDraw::FrameDraw(VulkanContext& ctx) : context(ctx)
 
     createSyncObjects();
     
+    glfwSetWindowUserPointer(GLWINDOW, this);
 }
 
 FrameDraw::~FrameDraw() {

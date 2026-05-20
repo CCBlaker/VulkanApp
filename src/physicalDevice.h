@@ -18,12 +18,20 @@ struct QueueFamilyIndicies {
     }
 };
 
+struct SwapSurfaceSupportDetails {
+    VkSurfaceCapabilitiesKHR capabilities;
+    std::vector<VkSurfaceFormatKHR> formats;
+    std::vector<VkPresentModeKHR> presentModes;
+};
+
+
 class PhysicalDevice {
 
     public:
 
         VkPhysicalDevice vulkanPhysicalDevice = VK_NULL_HANDLE;
-        QueueFamilyIndicies vulkanPhysicalDeviceQueueFamilies;
+        QueueFamilyIndicies vulkanQueueFamilies;
+        SwapSurfaceSupportDetails supportDetails;
         
         PhysicalDevice(VulkanContext& context);
 
@@ -35,6 +43,7 @@ class PhysicalDevice {
 
         QueueFamilyIndicies findQueueFamilies(VkPhysicalDevice device);
         bool checkDeviceExtensionSupport(VkPhysicalDevice device);
+        void querySwapSurfaceSupport(VkPhysicalDevice device);
 
         bool isDeviceSuitable(VkPhysicalDevice device);
         void pickPhysicalDevice();

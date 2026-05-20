@@ -10,7 +10,7 @@ class Window {
 
         GLFWwindow* glWindow;
         VkSurfaceKHR vulkanSurface;
-
+        
         Window(VulkanContext& context);
 
         void pauseWindowConditional();
@@ -20,7 +20,6 @@ class Window {
     private:
 
         VulkanContext& context;
-        VkInstance vulkanInstance;
 
         void initWindow();
         void createSurface();
