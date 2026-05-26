@@ -77,7 +77,6 @@ void VulkanApp::mainLoop() {
 }
 
 void VulkanApp::cleanup() {
-    
     // unique_ptrs will clean up in reverse order
     glfwTerminate();
 }

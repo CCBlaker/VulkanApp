@@ -48,7 +48,7 @@ void Commandbuffer::recordCommandbuffer(VkCommandBuffer commandbuffer, uint32_t 
     renderpassInfo.renderPass = VRENDERPASS;
     renderpassInfo.framebuffer = VFRAMEBUFFERS[imageIndex];
     renderpassInfo.renderArea.offset = {0, 0};
-    renderpassInfo.renderArea.extent = SWAPCHAIN->extent;
+    renderpassInfo.renderArea.extent = SWAPCHAIN->swapChainExtent;
 
     VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
     renderpassInfo.clearValueCount = 1;
@@ -57,6 +57,10 @@ void Commandbuffer::recordCommandbuffer(VkCommandBuffer commandbuffer, uint32_t 
     vkCmdBeginRenderPass(commandbuffer, &renderpassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
     vkCmdBindPipeline(commandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VPIPELINE);
+
+    VVIEWPORT.width = static_cast<float>(SWAPCHAIN->swapChainExtent.width);
+    VVIEWPORT.height = static_cast<float>(SWAPCHAIN->swapChainExtent.height);
+    VSCISSOR.extent = SWAPCHAIN->swapChainExtent;
 
     vkCmdSetViewport(commandbuffer, 0, 1, &PIPELINE->viewport);
     vkCmdSetScissor(commandbuffer, 0, 1, &PIPELINE->scissor);

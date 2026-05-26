@@ -61,8 +61,8 @@ void Pipeline::createGraphicsPipeline() {
     //Viewport Rect
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = SWAPCHAIN->swapChainExtent.width;
-    viewport.height = SWAPCHAIN->swapChainExtent.height;
+    viewport.width = static_cast<float>(SWAPCHAIN->swapChainExtent.width);
+    viewport.height = static_cast<float>(SWAPCHAIN->swapChainExtent.height);
     viewport.minDepth = 0.0f;
     viewport. maxDepth = 1.0f;
 
@@ -74,9 +74,10 @@ void Pipeline::createGraphicsPipeline() {
     VkPipelineViewportStateCreateInfo viewportState{};
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
     viewportState.viewportCount = 1;
-    viewportState.pViewports = &viewport;
+    viewportState.pViewports = nullptr; //Dynamic state
     viewportState.scissorCount = 1;
-    viewportState.pScissors = &scissor;
+    viewportState.pScissors = nullptr; //Dynamic state
+
 
     //Dynamic State
     std::vector<VkDynamicState> dynamicStates = {

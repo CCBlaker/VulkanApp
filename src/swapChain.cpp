@@ -38,10 +38,12 @@ VkExtent2D SwapChain::pickExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
     }
 }
 
-void SwapChain::pickSupportDetails(const VkPhysicalDevice device, const SwapSurfaceSupportDetails& supportDetails) {
+void SwapChain::pickSupportDetails(const VkPhysicalDevice device, SwapSurfaceSupportDetails& supportDetails) {
     
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, VSURFACE, &supportDetails.capabilities);
+
     presentMode = pickPresentMode(supportDetails.presentModes);
-    extent = pickExtent(supportDetails.capabilities);
+    swapChainExtent = pickExtent(supportDetails.capabilities);
     
     imageCount = supportDetails.capabilities.minImageCount + 1;
 
@@ -52,13 +54,15 @@ void SwapChain::pickSupportDetails(const VkPhysicalDevice device, const SwapSurf
 
 void SwapChain::createSwapChain() {
 
+    pickSupportDetails(PDEVICE->vulkanPhysicalDevice, PDEVICE->supportDetails);
+
     VkSwapchainCreateInfoKHR createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
     createInfo.surface = VSURFACE;
     createInfo.minImageCount = imageCount;
     createInfo.imageFormat = RENDERPASS->surfaceFormat.format;
     createInfo.imageColorSpace = RENDERPASS->surfaceFormat.colorSpace;
-    createInfo.imageExtent = extent;
+    createInfo.imageExtent = swapChainExtent;
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
@@ -89,7 +93,6 @@ void SwapChain::createSwapChain() {
     vkGetSwapchainImagesKHR(VDEVICE, vulkanSwapChain, &imageCount, swapChainImages.data());
 
     swapChainImageFormat = RENDERPASS->surfaceFormat.format;
-    swapChainExtent = extent;
 }
 
 void SwapChain::createImageViews() {
@@ -157,7 +160,6 @@ void SwapChain::cleanupSwapChain() {
 void SwapChain::recreateSwapChain() {    
     vkDeviceWaitIdle(VDEVICE);
 
-    pickSupportDetails(PDEVICE->vulkanPhysicalDevice, PDEVICE->supportDetails);
     cleanupSwapChain();
 
     createSwapChain();
@@ -169,7 +171,7 @@ void SwapChain::recreateSwapChain() {
 SwapChain::SwapChain(VulkanContext& ctx) : context(ctx) {
 
     ctx.swapChain = this;
-    pickSupportDetails(PDEVICE->vulkanPhysicalDevice, PDEVICE->supportDetails);
+    
     createSwapChain();
     createImageViews();
     createFramebuffer();

@@ -13,14 +13,12 @@ class SwapChain {
         std::vector<VkImageView> swapChainImageViews;
         std::vector<VkFramebuffer> vulkanFramebuffers; 
 
+        VkFormat swapChainImageFormat;
         VkPresentModeKHR presentMode;
-        VkExtent2D extent;
+        VkExtent2D swapChainExtent;
         uint32_t imageCount;
         
         size_t swapChainImageNum;
-
-        VkFormat swapChainImageFormat;
-        VkExtent2D swapChainExtent;
 
         SwapChain(VulkanContext& context);
 
@@ -36,7 +34,7 @@ class SwapChain {
         void createImageViews();
         void createFramebuffer();
 
-        void pickSupportDetails(const VkPhysicalDevice device, const SwapSurfaceSupportDetails& supportDetails);
+        void pickSupportDetails(const VkPhysicalDevice device, SwapSurfaceSupportDetails& supportDetails);
         VkPresentModeKHR pickPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
         VkExtent2D pickExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 

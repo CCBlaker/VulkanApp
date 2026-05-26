@@ -17,6 +17,8 @@
 #define VSURFACE context.window->vulkanSurface
 #define VDEVICE context.device->vulkanDevice
 #define VPIPELINE context.pipeline->vulkanGraphicsPipeline
+#define VVIEWPORT context.pipeline->viewport
+#define VSCISSOR context.pipeline->scissor
 #define VRENDERPASS context.renderpass->vulkanRenderpass
 #define VSWAPCHAIN context.swapChain->vulkanSwapChain
 #define VFRAMEBUFFERS context.swapChain->vulkanFramebuffers

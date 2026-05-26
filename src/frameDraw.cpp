@@ -33,10 +33,10 @@ void FrameDraw::drawFrame() {
 
     swapChainAdequate = true;
 
-    vkWaitForFences(VDEVICE, 1, &frameFlightFences[currentFrame], VK_TRUE, UINT_MAX);
+    vkWaitForFences(VDEVICE, 1, &frameFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
     
     uint32_t imageIndex;
-    VkResult result = vkAcquireNextImageKHR(VDEVICE, VSWAPCHAIN, UINT_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
+    VkResult result = vkAcquireNextImageKHR(VDEVICE, VSWAPCHAIN, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {
         swapChainAdequate = false;
@@ -99,7 +99,7 @@ FrameDraw::FrameDraw(VulkanContext& ctx) : context(ctx)
 {
     ctx.frameDraw = this;
     currentFrame = 0;
-    bool framebufferResized = false;
+    framebufferResized = false;
 
     createSyncObjects();
     

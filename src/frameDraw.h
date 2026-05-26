@@ -14,7 +14,7 @@ class FrameDraw {
 
         uint32_t currentFrame;
         bool swapChainAdequate;
-        bool framebufferResized = false;
+        bool framebufferResized;
 
         void drawFrame();
         
